@@ -17,7 +17,7 @@
 
           <h3>Preencha abaixo</h3>
 
-          <form>
+          <form @submit.prevent="enviar" @reset="resetar">
 
             <div class="form-group">
               <label>Nome:</label>
@@ -70,8 +70,12 @@
 
             <div class="form-group">
               <label>Ocupação:</label>
-              <select class="form-control" placeholder="Seu email">
-                <option>Selecione uma opção...</option>
+              <select class="form-control" v-model="desenvolvedor.ocupacao">
+                <option value="" disabled>Selecione uma opção...</option>
+                <option 
+                v-for="(ocupacao, indice) in ocupacoes"
+                :key="indice"
+                :value="ocupacao">{{ ocupacao }}</option>
               </select>
             </div>  
 
@@ -123,6 +127,15 @@
               class="form-control" 
               placeholder="Conte-nos um pouco sobre você..." v-model="desenvolvedor.biografia"></textarea>
             </div>
+            <div class="form-group">
+              <AppRange 
+                label="Salário pretendido:"
+                v-model.number="desenvolvedor.salario"
+                min="1000"
+                max="15000"
+                step="500"
+                inputClasses="form-control-range" />
+            </div>
 
             <div class="form-group">
 
@@ -138,8 +151,9 @@
 
             </div>
 
-            <button class="btn btn-secondary">Resetar</button>
-            <button class="btn btn-success">Enviar</button>
+            <button class="btn btn-secondary" type="reset">Resetar</button>
+            <button type="submit" class="btn btn-success">Enviar</button>
+
 
           </form>
 
@@ -159,7 +173,7 @@
               <li class="list-group-item"><strong>Email:</strong> {{ desenvolvedor.email }} </li>
               <li class="list-group-item"><strong>Idade:</strong> {{ desenvolvedor.idade }} </li>
               <li class="list-group-item"><strong>Gênero:</strong> {{ desenvolvedor.genero }}</li>
-              <li class="list-group-item"><strong>Ocupação:</strong> </li>
+              <li class="list-group-item"><strong>Ocupação:</strong> {{ desenvolvedor.ocupacao }} </li>
               <li class="list-group-item"><strong>Tecnologias:</strong>
                 <ul>
                   <li v-for="(tecnologia, indice) in desenvolvedor.tecnologias" 
@@ -168,6 +182,8 @@
                 </ul>
               <li class="list-group-item"><strong>Biografia:</strong> {{ desenvolvedor.biografia }}</li>
               <li class="list-group-item"><strong>Receber notificações?</strong> {{ desenvolvedor.notificacoes }}</li>
+              <li class="list-group-item"><strong>Salário pretendido: </strong> {{ desenvolvedor.salario }}</li>
+
             </ul>
 
             <div class="card-header">Model</div>
@@ -188,10 +204,17 @@
 </template>
 
 <script>
+
+import AppRange from './components/Range.vue';
+
 export default {
+  components: {
+    AppRange
+  },
   data() {
     return {
-      desenvolvedor: {
+      desenvolvedor: {},
+      valoresPadroes: {
         nome: '',
         email: '',
         idade: 24,
@@ -199,8 +222,28 @@ export default {
         genero: 'Masculino',
         tecnologias: [],
         notificacoes: 'Não',
-      }
+        ocupacao: '',
+        salario: 15000
+      },
+      ocupacoes: [
+        'Desenvolvedor Frontend (Web)',
+        'Desenvolvedor Frontend (Mobile)',
+        'Desenvolvedor Backend',
+        'Desenvolvedor Fullstack'
+      ]
     }
+  },
+  methods: {
+    enviar(event) {
+      const formularioEnviado = Object.assign({}, this.desenvolvedor);
+      console.log('Formulário enviado!', formularioEnviado);
+    },
+    resetar() {
+      this.desenvolvedor = Object.assign({}, this.valoresPadroes);
+    }
+  },
+  created() {
+    this.resetar();
   }
 }
 </script>
